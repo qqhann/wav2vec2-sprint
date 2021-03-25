@@ -345,17 +345,26 @@ def main():
 
     # Get the datasets:
     train_dataset = datasets.load_dataset(
-        "common_voice",
+        "tommy19970714/jsut_asr_hiragana",
         data_args.dataset_config_name,
-        split=data_args.train_split_name,
+        split="validation[:80%]",
         cache_dir=model_args.cache_dir,
+        use_auth_token=True,
     )
     eval_dataset = datasets.load_dataset(
-        "common_voice",
+        "tommy19970714/jsut_asr_hiragana",
         data_args.dataset_config_name,
-        split="test",
+        split="validation[80%:]",
         cache_dir=model_args.cache_dir,
+        use_auth_token=True,
     )
+    # 日本語データセットのcolumn名を合わせる
+    train_dataset = train_dataset.remove_columns(["id"])
+    train_dataset = train_dataset.rename_column("file", "path")
+    train_dataset = train_dataset.rename_column("text", "sentence")
+    eval_dataset = eval_dataset.remove_columns(["id"])
+    eval_dataset = eval_dataset.rename_column("file", "path")
+    eval_dataset = eval_dataset.rename_column("text", "sentence")
 
     # Create and save tokenizer
     chars_to_ignore_regex = f'[{"".join(data_args.chars_to_ignore)}]'
@@ -445,7 +454,8 @@ def main():
     if data_args.max_val_samples is not None:
         eval_dataset = eval_dataset.select(range(data_args.max_val_samples))
 
-    resampler = torchaudio.transforms.Resample(48_000, 16_000)
+    # 日本語データセットはすでに16kHzになっているため
+    resampler = torchaudio.transforms.Resample(16_000, 16_000)
 
     # Preprocessing the datasets.
     # We need to read the aduio files as arrays and tokenize the targets.
