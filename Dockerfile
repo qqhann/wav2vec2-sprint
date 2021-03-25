@@ -33,7 +33,7 @@ RUN chown -R 42420:42420 /usr/bin/run_all.sh
 #Default training env variables
 ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     dataset_config_name="clean" \
-    output_dir="/workspace/output_models/wav2vec2-large-xlsr-french-demo" \
+    output_dir="/opt/ml/checkpoints" \
     cache_dir="/workspace/data" \
     num_train_epochs="1" \
     per_device_train_batch_size="32" \
