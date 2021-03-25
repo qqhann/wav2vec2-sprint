@@ -38,7 +38,7 @@ RUN pip install git+https://github.com/huggingface/transformers.git
 
 RUN mkdir -p /workspace/wav2vec/
 
-COPY fine-tune-xlsr-wav2vec2-on-turkish-asr-with-transformers.ipynb finetune.sh run_common_voice.py  finetune_with_params.sh /workspace/wav2vec/
+COPY fine-tune-xlsr-wav2vec2-on-turkish-asr-with-transformers.ipynb train run_common_voice.py  finetune_with_params.sh /workspace/wav2vec/
 
 COPY home-server.html run_all.sh /usr/bin/
 
