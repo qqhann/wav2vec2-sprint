@@ -31,8 +31,8 @@ RUN chown -R 42420:42420 /workspace
 RUN chown -R 42420:42420 /usr/bin/run_all.sh
 
 #Default training env variables
-ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
-    dataset_config_name="fr" \
+ENV model_name_or_path="tommy19970714/jsut_asr_hiragana" \
+    dataset_config_name="clean" \
     output_dir="/workspace/output_models/wav2vec2-large-xlsr-french-demo" \
     cache_dir="/workspace/data" \
     num_train_epochs="1" \
@@ -49,6 +49,11 @@ ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     layerdrop="0.1" \
     max_train_samples=100 \
     max_val_samples=100
+
+
+# huggingfaceの冨平の認証情報
+RUN mkdir -p /root/.huggingface
+RUN echo -n CsggHkrDoVAVAgEzvgozxQLbDlardRcuexSSQhSAFZTuRnLXPBupdlyRKfKbKKHSsWtDLeCMiTcmBWBTtGIcIiyOHBItTPnZNEKXOdPFxbEdCgiwWHiSuhefFWKOOVmv > /root/.huggingface/token
 
 WORKDIR /workspace
 ENTRYPOINT []
