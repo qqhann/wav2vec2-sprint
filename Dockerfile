@@ -1,14 +1,30 @@
-FROM ovhcom/ai-training-one-for-all
+FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 
-RUN apt-get update && \
-    apt install -y bash \
-    build-essential \
-    libsndfile1-dev \
-    git-lfs \
-    sox
+ARG PYTHON_VERSION=3.8
 
-RUN python3 -m pip install --no-cache-dir --upgrade pip && \
-    python3 -m pip install --no-cache-dir \
+ARG PYTHON_VERSION=3.8
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  cmake \
+  git \
+  curl \
+  ca-certificates \
+  libjpeg-dev \
+  libpng-dev \
+  git-lfs \
+  sox && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+  chmod +x ~/miniconda.sh && \
+  ~/miniconda.sh -b -p /opt/conda && \
+  rm ~/miniconda.sh && \
+  /opt/conda/bin/conda install -y python=$PYTHON_VERSION numpy pyyaml scipy ipython mkl mkl-include ninja cython typing && \
+  /opt/conda/bin/conda install -y pytorch==1.6.0 torchvision torchaudio==0.6.0 cudatoolkit=10.2 -c pytorch
+ENV PATH /opt/conda/bin:$PATH
+
+RUN python -m pip install --no-cache-dir --upgrade pip && \
+    python -m pip install --no-cache-dir \
     datasets \
     jiwer==2.2.0 \
     soundfile \
@@ -16,9 +32,9 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     lang-trans==0.6.0 \
     librosa==0.8.0
 
-RUN pip3 uninstall -y typing allennlp
+RUN pip uninstall -y typing allennlp
 
-RUN pip3 install git+https://github.com/huggingface/transformers.git
+RUN pip install git+https://github.com/huggingface/transformers.git
 
 RUN mkdir -p /workspace/wav2vec/
 
@@ -51,6 +67,5 @@ ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     max_val_samples=100
 
 WORKDIR /workspace
-ENTRYPOINT []
+#ENTRYPOINT []
 #CMD ["sh", "/usr/bin/run_all.sh"]
-CMD ["supervisord", "-n", "-u", "42420", "-c", "/etc/supervisor/supervisor.conf"]
