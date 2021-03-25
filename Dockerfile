@@ -31,7 +31,7 @@ RUN chown -R 42420:42420 /workspace
 RUN chown -R 42420:42420 /usr/bin/run_all.sh
 
 #Default training env variables
-ENV model_name_or_path="tommy19970714/jsut_asr_hiragana" \
+ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     dataset_config_name="clean" \
     output_dir="/workspace/output_models/wav2vec2-large-xlsr-french-demo" \
     cache_dir="/workspace/data" \
