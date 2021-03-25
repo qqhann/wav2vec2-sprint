@@ -347,14 +347,16 @@ def main():
     train_dataset = datasets.load_dataset(
         "tommy19970714/jsut_asr_hiragana",
         data_args.dataset_config_name,
-        split=data_args.train_split_name,
+        split="validation[:80%]",
         cache_dir=model_args.cache_dir,
+        use_auth_token=True,
     )
     eval_dataset = datasets.load_dataset(
         "tommy19970714/jsut_asr_hiragana",
         data_args.dataset_config_name,
-        split="test",
+        split="validation[80%:]",
         cache_dir=model_args.cache_dir,
+        use_auth_token=True,
     )
     # 日本語データセットのcolumn名を合わせる
     train_dataset = train_dataset.remove_columns(["id"])
