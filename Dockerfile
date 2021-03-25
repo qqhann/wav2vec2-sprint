@@ -51,7 +51,7 @@ ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     max_val_samples=100
 
 
-# huggingfaceの冨平の認証情報
+# huggingfaceのtommyの認証情報
 RUN mkdir -p /root/.huggingface
 RUN echo -n CsggHkrDoVAVAgEzvgozxQLbDlardRcuexSSQhSAFZTuRnLXPBupdlyRKfKbKKHSsWtDLeCMiTcmBWBTtGIcIiyOHBItTPnZNEKXOdPFxbEdCgiwWHiSuhefFWKOOVmv > /root/.huggingface/token
 
