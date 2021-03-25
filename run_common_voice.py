@@ -345,13 +345,13 @@ def main():
 
     # Get the datasets:
     train_dataset = datasets.load_dataset(
-        "common_voice",
+        "tommy19970714/jsut_asr_hiragana",
         data_args.dataset_config_name,
         split=data_args.train_split_name,
         cache_dir=model_args.cache_dir,
     )
     eval_dataset = datasets.load_dataset(
-        "common_voice",
+        "tommy19970714/jsut_asr_hiragana",
         data_args.dataset_config_name,
         split="test",
         cache_dir=model_args.cache_dir,
