@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libjpeg-dev \
   libpng-dev \
   git-lfs \
-  sox && \
+  sox \
+  wget && \
   rm -rf /var/lib/apt/lists/*
 
 RUN curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -38,22 +39,14 @@ RUN pip install git+https://github.com/huggingface/transformers.git
 
 RUN mkdir -p /workspace/
 
-COPY fine-tune-xlsr-wav2vec2-on-turkish-asr-with-transformers.ipynb train run_common_voice.py  finetune_with_params.sh /workspace/
-
-COPY home-server.html run_all.sh /usr/bin/
-
-RUN chown -R 42420:42420 /workspace
-
-RUN chown -R 42420:42420 /usr/bin/run_all.sh
-
 #Default training env variables
-ENV model_name_or_path="tommy19970714/wav2vec2-base-ja-960h" \
+ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     dataset_config_name="clean" \
     output_dir="/opt/ml/checkpoints" \
     cache_dir="/workspace/data" \
     num_train_epochs="200" \
-    per_device_train_batch_size="32" \
-    per_device_eval_batch_size="32" \
+    per_device_train_batch_size="4" \
+    per_device_eval_batch_size="4" \
     evaluation_strategy="steps" \
     learning_rate="3e-4" \
     warmup_steps="500" \
@@ -68,7 +61,8 @@ ENV model_name_or_path="tommy19970714/wav2vec2-base-ja-960h" \
 
 # Setup wandb
 ENV WANDB_API_KEY=cf9b815895ae10619fdbd62ce6664f90da83ce3a
-ENV WANDB_PROJECT=finetuning_huggingface_jsut_from_pretrain_960h
+ENV WANDB_PROJECT=finetuning_huggingface_laboro_dev_clean_from_xlsr53
+RUN pip install wandb
 RUN wandb login
 
 # huggingfaceの認証情報
@@ -79,3 +73,18 @@ WORKDIR /workspace
 #ENTRYPOINT []
 #CMD ["sh", "/usr/bin/run_all.sh"]
 ENV PATH="/workspace:${PATH}"
+
+RUN wget https://asr-dataset-ja.s3-ap-northeast-1.amazonaws.com/laborotvspeech/denoising/1.0.0/dev_clean.tar.bz2 -O dev_clean.tar.bz2
+RUN tar -xvf dev_clean.tar.bz2
+RUN mv dev_clean data
+RUN wget https://asr-dataset-ja.s3-ap-northeast-1.amazonaws.com/laborotvspeech/denoising/1.0.0/dev_clean_text_hiragana.csv -O ./data/text.csv
+
+COPY fine-tune-xlsr-wav2vec2-on-turkish-asr-with-transformers.ipynb train run_common_voice.py finetune_with_params.sh vocab.json /workspace/
+
+COPY home-server.html run_all.sh /usr/bin/
+
+RUN chown -R 42420:42420 /workspace
+
+RUN chown -R 42420:42420 /usr/bin/run_all.sh
+
+

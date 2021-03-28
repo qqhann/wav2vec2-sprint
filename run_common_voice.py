@@ -345,16 +345,16 @@ def main():
 
     # Get the datasets:
     train_dataset = datasets.load_dataset(
-        "tommy19970714/jsut_asr_hiragana",
-        data_args.dataset_config_name,
-        split="validation[:80%]",
+        "tommy19970714/laborotvspeech",
+        data_dir='./data',
+        split="train[:80%]",
         cache_dir=model_args.cache_dir,
         use_auth_token=True,
     )
     eval_dataset = datasets.load_dataset(
-        "tommy19970714/jsut_asr_hiragana",
-        data_args.dataset_config_name,
-        split="validation[80%:]",
+        "tommy19970714/laborotvspeech",
+        data_dir='./data',
+        split="train[80%:]",
         cache_dir=model_args.cache_dir,
         use_auth_token=True,
     )
@@ -386,32 +386,7 @@ def main():
         all_text = " ".join(batch["text"])
         vocab = list(set(all_text))
         return {"vocab": [vocab], "all_text": [all_text]}
-
-    vocab_train = train_dataset.map(
-        extract_all_chars,
-        batched=True,
-        batch_size=-1,
-        keep_in_memory=True,
-        remove_columns=train_dataset.column_names,
-    )
-    vocab_test = train_dataset.map(
-        extract_all_chars,
-        batched=True,
-        batch_size=-1,
-        keep_in_memory=True,
-        remove_columns=eval_dataset.column_names,
-    )
-
-    vocab_list = list(set(vocab_train["vocab"][0]) | set(vocab_test["vocab"][0]))
-    vocab_dict = {v: k for k, v in enumerate(vocab_list)}
-    vocab_dict["|"] = vocab_dict[" "]
-    del vocab_dict[" "]
-    vocab_dict["[UNK]"] = len(vocab_dict)
-    vocab_dict["[PAD]"] = len(vocab_dict)
-
-    with open("vocab.json", "w") as vocab_file:
-        json.dump(vocab_dict, vocab_file)
-
+ 
     # Load pretrained model and tokenizer
     #
     # Distributed training:
@@ -446,7 +421,6 @@ def main():
         ctc_loss_reduction="mean",
         pad_token_id=processor.tokenizer.pad_token_id,
         vocab_size=len(processor.tokenizer),
-        use_auth_token=True,
     )
 
     if data_args.max_train_samples is not None:
