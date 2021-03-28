@@ -300,7 +300,7 @@ def main():
         )
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
+    
     # Detecting last checkpoint.
     last_checkpoint = None
     if (
@@ -446,6 +446,7 @@ def main():
         ctc_loss_reduction="mean",
         pad_token_id=processor.tokenizer.pad_token_id,
         vocab_size=len(processor.tokenizer),
+        use_auth_token=True,
     )
 
     if data_args.max_train_samples is not None:
