@@ -47,11 +47,11 @@ RUN chown -R 42420:42420 /workspace
 RUN chown -R 42420:42420 /usr/bin/run_all.sh
 
 #Default training env variables
-ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
+ENV model_name_or_path="tommy19970714/wav2vec2-base-ja-960h" \
     dataset_config_name="clean" \
     output_dir="/opt/ml/checkpoints" \
     cache_dir="/workspace/data" \
-    num_train_epochs="1" \
+    num_train_epochs="200" \
     per_device_train_batch_size="32" \
     per_device_eval_batch_size="32" \
     evaluation_strategy="steps" \
@@ -64,8 +64,12 @@ ENV model_name_or_path="facebook/wav2vec2-large-xlsr-53" \
     feat_proj_dropout="0.0" \
     layerdrop="0.1" \
     max_train_samples=100 \
-    max_val_samples=100
+    max_val_samples=100 
 
+# Setup wandb
+ENV WANDB_API_KEY=cf9b815895ae10619fdbd62ce6664f90da83ce3a
+ENV WANDB_PROJECT=finetuning_huggingface_jsut_from_pretrain_960h
+RUN wandb login
 
 # huggingfaceの認証情報
 RUN mkdir -p /root/.huggingface
@@ -74,3 +78,4 @@ RUN echo -n CsggHkrDoVAVAgEzvgozxQLbDlardRcuexSSQhSAFZTuRnLXPBupdlyRKfKbKKHSsWtD
 WORKDIR /workspace
 #ENTRYPOINT []
 #CMD ["sh", "/usr/bin/run_all.sh"]
+ENV PATH="/workspace:${PATH}"
